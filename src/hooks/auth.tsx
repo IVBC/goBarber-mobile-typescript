@@ -8,9 +8,16 @@ import React, {
 import AsyncStorage from '@react-native-community/async-storage';
 import api from '../services/api';
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url: string;
+}
+
 interface AuthState {
   token: string;
-  user: any;
+  user: User;
 }
 interface SignInCredentials {
   email: string;
@@ -18,7 +25,7 @@ interface SignInCredentials {
 }
 
 interface AuthContextData {
-  user: any;
+  user: User;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
   loading: boolean;
@@ -38,6 +45,8 @@ const AuthProvider: React.FC = ({ children }) => {
       ]);
 
       if (token[1] && user[1]) {
+        api.defaults.headers.authorization = `Bearer ${token[1]}`;
+
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
       setLoading(false);
@@ -46,10 +55,10 @@ const AuthProvider: React.FC = ({ children }) => {
     loadStorageData();
   }, []);
   const signIn = useCallback(async ({ email, password }) => {
-    const response = await api.post<{ token: string; user: string }>(
-      'sessions',
-      { email, password },
-    );
+    const response = await api.post<{ token: string; user: User }>('sessions', {
+      email,
+      password,
+    });
     console.log(response.data);
 
     const { token, user } = response.data;
@@ -58,6 +67,9 @@ const AuthProvider: React.FC = ({ children }) => {
       ['@GoBarber:token', token],
       ['@GoBarber:user', JSON.stringify(user)],
     ]);
+
+    api.defaults.headers.authorization = `Bearer ${token}`;
+
     setData({ token, user });
   }, []);
 

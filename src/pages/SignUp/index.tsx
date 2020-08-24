@@ -17,9 +17,9 @@ import api from '../../services/api';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
-import logoImg from '../assets/logo.png';
-import Input from '../components/Input';
-import Button from '../components/Button';
+import logoImg from '../../assets/logo.png';
+import Input from '../../components/Input';
+import Button from '../../components/Button';
 
 import {
   Container,
